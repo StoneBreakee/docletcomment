@@ -1,12 +1,6 @@
 package com.lvyj001.doclet;
 
-import com.sun.javadoc.AnnotationDesc;
-import com.sun.javadoc.AnnotationTypeDoc;
-import com.sun.javadoc.ClassDoc;
-import com.sun.javadoc.RootDoc;
-
-import java.io.*;
-import java.net.URL;
+import com.sun.javadoc.*;
 
 public class MyDoclet {
 
@@ -16,46 +10,45 @@ public class MyDoclet {
             System.out.println(classes[i]);
             ClassDoc doc = classes[i];
             // 类注解
-            AnnotationDesc[] anDescs = doc.annotations();
-            for (AnnotationDesc anDesc : anDescs) {
-                AnnotationTypeDoc atd = anDesc.annotationType();
-                System.out.println(atd);
-                AnnotationDesc.ElementValuePair[] pairs = anDesc.elementValues();
-                for (AnnotationDesc.ElementValuePair pair : pairs){
-                    System.out.println(pair.element() + " -> " + pair.value());
-                }
-            }
+//            AnnotationDesc[] anDescs = doc.annotations();
+//            for (AnnotationDesc anDesc : anDescs) {
+//                AnnotationTypeDoc atd = anDesc.annotationType();
+//                System.out.println(atd);
+//                AnnotationDesc.ElementValuePair[] pairs = anDesc.elementValues();
+//                for (AnnotationDesc.ElementValuePair pair : pairs) {
+//                    System.out.println(pair.element() + " -> " + pair.value());
+//                }
+//            }
             // 类注释
             // 成员变量注解
             // 成员变量注释
             // 成员方法注解
             // 成员方法注释
+            MethodDoc[] mDocs = doc.methods();
+            for (MethodDoc mDoc : mDocs) {
+                System.out.println(mDoc.name());
+                System.out.println(mDoc.getRawCommentText());
+                System.out.println(mDoc.returnType());
+                Parameter[] parameters = mDoc.parameters();
+                for (Parameter parameter:parameters){
+                    System.out.println(parameter.name());
+                }
+                AnnotationDesc[] anDescs = mDoc.annotations();
+                for (AnnotationDesc anDesc : anDescs) {
+                    AnnotationTypeDoc atd = anDesc.annotationType();
+                    System.out.println(atd);
+                    AnnotationDesc.ElementValuePair[] pairs = anDesc.elementValues();
+                    for (AnnotationDesc.ElementValuePair pair : pairs) {
+                        System.out.println(pair.element() + " -> " + pair.value());
+                    }
+                }
+                System.out.println("--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
+            }
+            // 构造方法注释
+            // 构造方法注解
+            // 递归
         }
         return true;
     }
 
-    public static void main(String[] args) throws IOException {
-        File fileList = initFileList();
-        // MyDoclet.class.getName()  -->  com.lvyj001.doclet.MyDoclet
-        com.sun.tools.javadoc.Main.execute(new String[]{"-doclet", MyDoclet.class.getName(), "-encoding", "utf-8", "@" + fileList.getPath()});
-    }
-
-    public static File initFileList() throws IOException {
-        // /F:/intelij_hadoop/docletcomment/target/classes/
-        String path = MyDoclet.class.getClassLoader().getResource(".").getPath();
-        File dir = new File(path + "files/");
-        File fileList = new File(path, "list");
-        if (fileList.exists()) {
-            return fileList;
-        }
-
-        OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream(fileList));
-        File[] files = dir.listFiles();
-        for (File file : files) {
-            osw.write(file.getAbsolutePath() + "\n");
-        }
-        osw.flush();
-        osw.close();
-        return fileList;
-    }
 }

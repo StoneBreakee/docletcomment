@@ -1,3 +1,5 @@
 .idea/
 target/
 docletcomment.iml
+src/main/resources/projects/*
+src/main/resources/ivys/*
