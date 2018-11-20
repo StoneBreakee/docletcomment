@@ -1,5 +1,7 @@
 package com.lvyj001.denpendencymerge.metadata;
 
+import org.w3c.dom.Element;
+
 public class MetaDependency {
     private String groudId;
     private String artifactId;
@@ -29,7 +31,7 @@ public class MetaDependency {
         this.version = version;
     }
 
-    public int hasCode(){
+    public int hashCode(){
         return (this.groudId + "-" + this.artifactId + "-" + this.version).hashCode();
     }
 
@@ -41,5 +43,17 @@ public class MetaDependency {
             }
         }
         return false;
+    }
+
+    public void setValuesByIvy(Element element){
+        this.setGroudId(element.getAttribute("org"));
+        this.setArtifactId(element.getAttribute("name"));
+        this.setVersion(element.getAttribute("rev"));
+    }
+
+    public void setValuesByPom(Element element){
+        this.setGroudId(element.getAttribute("groupId"));
+        this.setArtifactId(element.getAttribute("artifactId"));
+        this.setVersion(element.getAttribute("version"));
     }
 }

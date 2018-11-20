@@ -1,10 +1,7 @@
 package com.lvyj001.denpendencymerge;
 
 import com.lvyj001.denpendencymerge.metadata.MetaDependency;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
+import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -12,6 +9,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,21 +23,44 @@ import java.util.List;
 public class IvyToPom {
 
     public List<MetaDependency> getIvyDependency(String projectIvy) throws ParserConfigurationException, IOException, SAXException {
+        List<MetaDependency> metaList = new ArrayList<>();
         // 获取ivy文件
         String path = IvyToPom.class.getClassLoader().getResource("ivys/" + projectIvy).getPath();
         File ivy = new File(path);
         Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(ivy);
         Element root = doc.getDocumentElement();
-        NamedNodeMap namedNodeMap = root.getAttributes();
-        for(int i = 0;i < namedNodeMap.getLength();i++){
-            Node node = namedNodeMap.item(i);
-            System.out.println(node.getNodeName() + " -> " + node.getNodeValue());
+
+        NodeList children = root.getChildNodes();
+        NodeList denpendencyList = null;
+        for (int i = 0; i < children.getLength(); i++) {
+            Node node = children.item(i);
+            if (node instanceof Element) {
+                Element element = (Element) node;
+                if ("dependencies".equals(element.getNodeName())) {
+                    denpendencyList = element.getChildNodes();
+                    break;
+                }
+            }
         }
-        return null;
+        if(denpendencyList == null){
+            return null;
+        }
+        for (int i = 0; i < denpendencyList.getLength(); i++) {
+            Node node = denpendencyList.item(i);
+            if(node instanceof Element){
+                Element element = (Element)node;
+                MetaDependency metaDependency = new MetaDependency();
+                metaDependency.setValuesByIvy(element);
+                metaList.add(metaDependency);
+            }
+        }
+        return metaList;
     }
+
 
     public static void main(String[] args) throws IOException, SAXException, ParserConfigurationException {
         IvyToPom itp = new IvyToPom();
-        itp.getIvyDependency("aml-ivy.xml");
+        List<MetaDependency> metaList = itp.getIvyDependency("aml-ivy.xml");
+        System.out.println(metaList.size());
     }
 }

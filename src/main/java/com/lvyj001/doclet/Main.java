@@ -9,7 +9,12 @@ public class Main {
     public static void main(String[] args) throws IOException {
         List<String> lists = initFileList();
         for (String list : lists) {
-            com.sun.tools.javadoc.Main.execute(new String[]{"-doclet", MyDoclet.class.getName(), "-encoding", "utf-8", "@" + list});
+            new Thread(){
+                @Override
+                public void run() {
+                    com.sun.tools.javadoc.Main.execute(new String[]{"-doclet", MyDoclet.class.getName(), "-encoding", "utf-8", "@" + list});
+                }
+            }.start();
         }
     }
 }

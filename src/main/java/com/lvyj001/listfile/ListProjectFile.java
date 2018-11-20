@@ -59,7 +59,7 @@ public class ListProjectFile {
             Files.walk(project).filter(new Predicate<Path>() {
                 @Override
                 public boolean test(Path path) {
-                    if (path.toString().endsWith(".java")) {
+                    if (path.toString().endsWith(".java") && !path.toString().contains("\\target\\classes")) {
                         return true;
                     }
                     return false;
